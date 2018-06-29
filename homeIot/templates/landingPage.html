@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='homePage.css') }}">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js" integrity="sha384-u/bQvRA/1bobcXlcEYpsEdFVK/vJs3+T+nXLsBYJthmdBuavHvAW6UsmqO2Gd/F9" crossorigin="anonymous"></script>
+
+<link href="https://fonts.googleapis.com/css?family=Rubik:300,300i,400,400i" rel="stylesheet">
+
+<!-- Custom Css -->
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='hover.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='jcf.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='homePage.css') }}">
+
+
+
+
+ <header>
+      <div class="container text-center">
+        <div class="row head text-center">
+ 			  <span class="slim text-center">AQUAPONICS</span><span class="thick">&nbsp;IOT</span> 
+        </div>
+      </div>
+ </header>
+
+<body>
+
+<div class="container pageContainer" id="homeBtnsContainer">
+	<div class="row">
+		<div class="homeNavBtnCol col-md-4 col-sm-12">
+			<div class="btn homeNavBtn text-center hvr-fade">
+				<div class="thumbnail" onclick="navPage(this,'Controls')">
+				<img class= "homeNavIconImg" src="{{ url_for('static', filename='icons/clock.gif') }}" width="auto" />
+        			<div class="caption">
+          				<span class="homeIconText">Time Schedule </span>
+        			</div>
+    			</div>
+			</div>			
+		</div>
+
+		<div class="homeNavBtnCol col-md-4 col-sm-12">
+			<div class="btn homeNavBtn m-x-auto hvr-fade" id="SettingsButton">
+				<div class="thumbnail" onclick="navPage(this,'Controls')">
+				<img class= "homeNavIconImg" src="{{ url_for('static', filename='icons/settings.gif') }}" width="auto" />
+        			<div class="caption" style="margin-top:23px">
+          				<span class="homeIconText"> Control </span>
+        			</div>
+    			</div>
+			</div>			
+		</div>
+
+		<div class="homeNavBtnCol col-md-4 col-sm-12">
+			<div class="btn homeNavBtn m-x-auto hvr-fade">
+				<div class="thumbnail">
+				<img class= "homeNavIconImg" src="{{ url_for('static', filename='icons/bar-chart.gif') }}" width="auto" />
+        			<div class="caption">
+          				<span class="homeIconText"> Explore Data </span>
+        			</div>
+    			</div>
+			</div>			
+		</div>
+
+
+
+	</div>
+</div>
+
+<div class="container pageContainer hiddenPage" id="Controls">
+    <div class="row text-center">
+		<span class="slim" id="titleNav">Controls</span>
+    </div>
+
+	<hr>
+	<!-- START LIGHTS SECTION -->
+	<div class="row">
+		<div class="col-sm-12 controlsSubHeader">
+			Aquarium
+		</div>
+	</div>
+	<hr class="third">
+
+	<!-- START AQUARIUM BTN ROW -->
+	<div class="row btnRow">
+		<div class="col-lg-6 text-center">
+			<div class="row">
+				<div class="col-sm-12 buttonTitle">
+					LED's
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="btn-group" role="group">
+					  <button type="button" id="tankLedLights-0" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">Off</span></button>
+					  <button type="button" id="tankLedLights-2" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">Auto</span></button>
+					  <button type="button" id="tankLedLights-1" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">On</span></button>
+					</div>	
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-6 text-center">
+			<div class="row">
+				<div class="col-md-12 buttonTitle">
+					Bulbs
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="btn-group" role="group">
+					  <button type="button" id="tankLights-0" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">Off</span></button>
+					  <button type="button" id="tankLights-2" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">Auto</span></button>
+					  <button type="button" id="tankLights-1" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">On</span></button>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- END AQUARIUM BTN ROW -->
+
+	<!--START GROW BED LIGHT SECTION-->
+	<div class="row">
+		<div class="col-sm-12 controlsSubHeader">
+			Grow Bed
+		</div>
+	</div>
+	<hr class="third">
+	<div class="row">
+		<div class="col-md-12 text-center">
+			<div class="row">
+				<div class="col-sm-12 buttonTitle">
+					Grow Lights
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="btn-group" role="group">
+					  <button type="button" id="growLights-0" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">Off</span></button>
+					  <button type="button" id="growLights-2" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">Auto</span></button>
+					  <button type="button" id="growLights-1" class="btn btn-secondary light-toggle-btn"><span class="lightBtnText">On</span></button>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- END GROW BED LIGHT SECTION -->
+
+	<!--START WATERING SECTION-->
+	<div class="row">
+		<div class="col-sm-12 controlsSubHeader text-center">
+			<p class="text-xs-center text-center">Watering & Draining</p>
+		</div>
+	</div>
+	<hr class="third" style="width: 70% ; margin-left: 15%">
+	
+	<form>
+		<div class="form-row text-center">
+		    <div class="form-group col-md-6 text-center" >
+		        <label for="sensorThreshold" class="control-label buttonTitle">Sensor Threshold</label>
+		        <input type="number" class="form-control configInput" id="sensorThreshold">
+		    </div>
+		    <div class="form-group col-md-6">
+		        <label for="name" class="control-label buttonTitle">Maxiumum Water Time</label>
+		        <input type="number" class="form-control configInput" id="waterRunInTime">
+		    </div>
+		</div>
+		<div class="form-row text-center">
+		    <div class="form-group col-md-6">
+		        <label for="name" class="control-label buttonTitle">Airration Time</label>
+		        <input type="number" class="form-control configInput" id="airrationTime">
+		    </div>
+		    <div class="form-group col-md-6">
+		        <label for="name" class="control-label buttonTitle">Drain Motor Duration</label>
+		        <input type="number" class="form-control configInput" id="drainTime">
+		    </div>
+		</div>
+		<div class="form-row text-center">
+		    <div class="form-group col-md-6">
+		        <label for="name" class="control-label buttonTitle">Siphon Clear Time</label>
+		        <input type="number" class="form-control configInput" id="dcPulse">
+		    </div>
+		    <div class="form-group col-md-6">
+		    	<label for="name" class="control-label buttonTitle"> &nbsp</label>
+		        <input type="password" class="form-control configInput" id="password" placeholder="PASSWORD">
+		    </div>
+		   
+		</div>
+	</form>			
+
+
+
+
+
+
+	<div class="row" style="margin-top: 33vh;"></div>
+
+
+
+</div>
+
+
+</body>
+
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.js') }}"></script>
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.number.js') }}"></script>
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.range.js') }}"></script>
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.select.js') }}"></script>
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='homePage.js') }}"></script>
+
+</html>
+
+
+
+
+
+
+
+<!-- 
+
+
+
+					<div class="col-md-6 d-flex justify-content-center">
+						<div class="row buttonTitle">
+							Sensor Threshold
+						</div>
+						<div class="row">
+							<input name="sensorThreshold" type="number" min="3" max="500" step="1" id="sensorThreshold">	
+						</div>
+					</div>
+
+					<div class="col-md-6 d-flex justify-content-center">
+						<div class="row buttonTitle">
+							Maxiumum Water Time
+						</div>
+						<div class="row">
+							<input name="sensorThreshold" type="number" step="1" id="waterRunInTime">	
+						</div>
+					</div>
+					<div class="col-md-6 d-flex justify-content-center">
+						<div class="row buttonTitle">
+							Airration Time
+						</div>
+						<div class="row">
+							<input name="sensorThreshold" type="number" min="300" max="600" step="1" id="airrationTime">	
+						</div>
+					</div>
+					<div class="col-md-6 d-flex justify-content-center">
+						<div class="row buttonTitle">
+							Drain Motor Duration
+						</div>
+						<div class="row">
+							<input name="sensorThreshold" type="number" id="drainTime">	
+						</div>
+					</div>
+					<div class="col-md-6 d-flex justify-content-center">
+						<div class="row buttonTitle text-xs-center">
+							Ciphon Clear Pulse Time
+						</div>
+						<div class="row">
+							<input name="dcPulse" type="number" min="0" max="5000" step="1" id="dcPulse">	
+						</div>
+					</div>
+					<div class="input-group col-md-6">
+					  <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2">
+					  <div class="input-group-append">
+					    <span class="input-group-text" id="basic-addon2">@example.com</span>
+					  </div>
+					</div> -->

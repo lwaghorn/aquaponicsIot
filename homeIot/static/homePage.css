@@ -1,0 +1,183 @@
+:root {
+  --square-size: 200px;
+}
+
+.hiddenPage{
+    display: none;
+}
+
+header{
+	margin-top: 100px;
+}
+
+.head {
+color: #80af3e;
+font-size: 80px;
+font-weight: 100;
+}
+
+.thick{
+    color: #5CC36E;
+	font-family: 'bigJohn';
+}
+
+.slim{
+	font-family: 'slimjim';
+	color: #FF8177;
+}
+
+body{
+
+background-color: #231E1F;
+
+}
+
+@font-face {
+    font-family: "bigjohn";
+    src:url('fonts/bigJohn.otf');
+}
+
+@font-face {
+    font-family: "slimjim";
+    src:url('fonts/slimJoe.otf');
+}
+
+.homeIconText{
+    font-family: 'slimjim';
+    color: #DFE1E2;
+    font-size: 20px;
+}
+
+
+.homeNavBtn{
+    width: 23em;
+    height: 25em;
+    border-radius: 10em;
+    background-color: #302b2c;
+}
+
+.homeNavBtnCol{
+    margin-top: 5em;
+    margin-bottom: 5em;
+}
+
+.homeNavIconImg{
+    width: 16em;
+    height: auto;
+    margin-top: 33px;
+}
+
+.thumbnail{
+    background-color: transparent;
+    border: none;
+}
+
+.thumbnail .caption{
+    margin-top: 10px;
+
+}
+
+#titleNav{
+    color: #DFE1E2;
+    font-size: 60px;
+}
+.controlsSubHeader{
+    color: #DFE1E2;
+    font-family: "slimjim";
+    font-size: 2em;
+    margin-top: 20px;
+    margin-left: 5px;
+}
+
+.light-toggle-btn{
+    font-family: 'slimjim';
+    width: 12em;
+    height: 7em;
+    border-radius: 10em;
+    border: solid;
+    border-width: 1px;
+    border-color: ghostwhite;
+    background-color: #302b2c;
+}
+.light-toggle-btn:focus{
+    outline:0;
+}
+
+.active{
+    background-color: #5CC36E !important;
+    outline: 0 !important;
+    color: #231E1F !important;
+}
+
+.active > .lightBtnText{
+    color:  #302b2c !important;
+    font-size: 25px !important;
+}
+
+.lightBtnText{
+    color: #DFE1E2;
+    font-size: 18px;
+}
+
+.third{
+    width: 33%;
+    margin-left: 0px;
+    margin-top: 0px;
+}
+
+
+.buttonTitle{
+   color: #DFE1E2;
+   font-family: "slimjim";
+   padding-top: 10px;
+}
+
+.btnRow{
+    margin-top: 20px;
+}
+
+input{
+    background:transparent;
+    border-radius: 16px;
+    width: 168px;
+}
+
+hr{
+  background: whitesmoke;
+}
+
+input{
+  text-align:center; 
+}
+
+.configInput{
+  width: 16vw;
+  height: 6vh;
+  margin-left: 7vw;
+  background: transparent;
+  border-radius: 16px;
+  font-size: 2em;
+  font-family: "slimjim";
+  color: whitesmoke;
+}
+
+.form-control:focus {
+    color: whitesmoke;
+    border: none;
+    outline: 0;
+    box-shadow: 0 0 0 0.08rem #5CC36E;
+    background: transparent;
+}
+
+.btn-secondary: {
+    color: black;
+    background-color: #5cc36e;
+    border: none;
+}
+
+.btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle {
+    color: #fff;
+    background-color: inherit;
+    border-color: #4e555b;
+    border: none;
+}
