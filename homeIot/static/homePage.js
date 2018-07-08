@@ -1,9 +1,6 @@
 
 $(document).ready(function(){
 
-
-
-
 $(".light-toggle-btn").click(function(){
   var id = $(this).attr('id');
   var id = id.split('-');
@@ -14,17 +11,15 @@ $(".light-toggle-btn").click(function(){
   $(this).addClass("active");
 });
 
-
 //jcf.replaceAll();
 
-
 });
-
 
 
 function openSettings(){
     return;
 }
+
 
 function navPage(element, destination){
   container  = element.closest('.pageContainer');
@@ -33,13 +28,14 @@ function navPage(element, destination){
   loadSettings();
 }
 
+
 function toggleLight(light,state){
     var data = {}
     data.state = state;
     data.light = light;
     $.ajax({
       type: "POST",
-      url: "API/changeLightSchedule",
+      url: "API/toggleLight",
       data : JSON.stringify(data),
       ContentType : "application/json",
       success: function(status) {
@@ -48,14 +44,15 @@ function toggleLight(light,state){
     });
 }
 
+
 function updateCycleSettings(){
 
   data = {'sensorThreshold' : $("#sensorThreshold").val(),
           'drainTime' : $("#drainTime").val(),
           'errorTime' : $("#waterRunInTime").val(),
-          'dryTime' :  $("#airrationTime").val()
+          'dryTime' :  $("#airrationTime").val(),
+          'password': $("#password").val()
         };
-
   $.ajax({
       type: "POST",
       url: "API/updateCycleSettings",
@@ -68,6 +65,7 @@ function updateCycleSettings(){
 
 }
 
+
 function loadSettings(){
       $.ajax({
       type: "POST",
@@ -75,13 +73,30 @@ function loadSettings(){
       ContentType : "application/json",
       success: function(data) {
           console.log(data);
-          $("#sensorThreshold").val(data.threshold);
-          $("#drainTime").val(data.drainTime);
-          $("#waterRunInTime").val(data.errorTime);
-          $("#airrationTime").val(data.dryTime);
-          $("#dcPulse").val(data.dcPulse);
+          lightStatuses = data.lightStatuses
+          lightStatuses.forEach(function(status){
+                $('#'+status['lightName']+"-"+status['mode']).addClass('active');
+          });
+          configuration = data.configuration
+          $("#sensorThreshold").val(configuration.threshold);
+          $("#drainTime").val(configuration.drainTime/1000);
+          $("#waterRunInTime").val(configuration.errorTime/1000);
+          $("#airrationTime").val(configuration.dryTime/1000);
+          $("#dcPulse").val(configuration.dcPulse/1000);
       }
     });
-
 }
 
+
+function passwordKeyUp(){
+  $('.input').keypress(function (e) {
+  if (e.which == 13) {
+    updateCycleSettings();
+    return false;
+  }
+  else{
+     //Implement password feedback thing
+
+  }
+});
+}

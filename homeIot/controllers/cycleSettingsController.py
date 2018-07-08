@@ -1,61 +1,74 @@
-import sys , os , time , requests , json
+import sys, os, time, requests , json
 from flask_restful import Resource, reqparse
 from flask import jsonify, request
 import datetime
-from models import *
-
-class updateCycleSettings(Resource):
-
-	def post(self):
-		data = ''
-		try:
-			data = request.get_json(force = True)
-		except :
-			print >>sys.stderr, "JSON request not properly formatted"
-
-		print >>sys.stderr, data
-
-		cycleConfig = cycleConfigurationModel()
-		cycleConfig.updateCycleSettings(data)
-
-		if cycleConfig.verfifySettings():
-			cycleConfig.save()
-			return jsonify( {'status' : 'success'} )
-		else:
-			return jsonify( {'status' : 'error'} )
+from models.models import CycleConfigurationModel, LightsModel, LightModeModel
+from configuration import Config
 
 
+class UpdateCycleSettings(Resource):
+
+    def post(self):
+        data = ''
+        try:
+            data = request.get_json(force=True)
+        except:
+            print >>sys.stderr, "JSON request not properly formatted"
+        print >>sys.stderr, data
+
+        cycle_config = CycleConfigurationModel()
+        cycle_config.set_cycle_settings(data)
+        if cycle_config.verfify_settings():
+            cycle_config.save()
+            payload = cycle_config.get_dict()
+            payload['command'] = 'cycleSettings'
+            requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
+            return jsonify({'status': 'success'})
+        else:
+            return jsonify({'status': 'error'})
 
 
+class GetConfiguration(Resource):
 
-class getConfiguration(Resource):
+    def get(self):
+        current_time = datetime.datetime.now()
+        response = dict()
+        response['hour'] = current_time.hour
+        response['minute'] = current_time.minute
+        response['day'] = current_time.day
+        response['month'] = current_time.month
+        configuration = CycleConfigurationModel.get_current()
+        response.update(configuration.get_dict())
+        return jsonify(response)
 
-	def post(self):
-		time = datetime.datetime.now()
-		response = {}
-		response['hour'] = time.hour
-		response['minute'] = time.minute
-		response['day'] = time.day
-		response['month'] = time.month
-		
-		configuration = cycleConfigurationModel.getCurrent()
 
-		response.update(configuration.getDict())
+class GetConfigurationAndStates(Resource):
 
-		return jsonify(response)
+    def post(self):
+        current_time = datetime.datetime.now()
+        response = dict()
+        response['hour'] = current_time.hour
+        response['minute'] = current_time.minute
+        response['day'] = current_time.day
+        response['month'] = current_time.month
+        configuration = CycleConfigurationModel.get_current()
+        response['configuration']=configuration.get_dict()
+        response['lightStatuses']=LightsModel.get_status_dict()
+        return jsonify(response)
 
-class getConfigurationAndStates(Resource):
 
-	def post(self):
-		time = datetime.datetime.now()
-		response = {}
-		response['hour'] = time.hour
-		response['minute'] = time.minute
-		response['day'] = time.day
-		response['month'] = time.month
-		
-		configuration = cycleConfigurationModel.getCurrent()
-		response.update(configuration.getDict())
-		response.update(lightsModel.getStatusDict())
+class Change(Resource):
 
-		return jsonify(response)		
+    def post(self):
+        data = ''
+        try:
+            data = request.get_json(force=True)
+        except:
+            print >> sys.stderr, "JSON request not properly formatted"
+        light = data['light']
+        state = data['state']
+        payload = {'command': 'manualLightSwitch', 'light': light, 'state': state}
+        requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
+        LightModeModel.log_change(light=light, state=state)
+        return
+

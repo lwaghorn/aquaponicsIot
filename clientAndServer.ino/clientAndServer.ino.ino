@@ -77,7 +77,7 @@ double threshold = 510;
 double drainTime = 23000;
 unsigned long errorTime = 180000;
 unsigned long dryTime = 30000;
-unsigned double dcPulseTime = 500;
+double dcPulseTime = 500;
 //// END GLOBALS ////
 
 
@@ -108,10 +108,9 @@ DHT dht(DHTPIN, DHTTYPE);
   Ethernet.begin(mac, ip, subnet, gateway);
   delay(2000); 
   Serial.begin(9600); 
-  getTimeFromServer();
   getConfiguration();
-  server.begin();
-    
+  checkLightSchedule();
+  server.begin();  
   }
 
 
@@ -170,6 +169,7 @@ DHT dht(DHTPIN, DHTTYPE);
     digitalWrite(DCMOTOR, HIGH);
     delay(dcPulseTime);
     digitalWrite(DCMOTOR,LOW);
+    delay(1500);
     return;   
     }
 
@@ -231,13 +231,19 @@ DHT dht(DHTPIN, DHTTYPE);
       data["temperature"] = dht.readTemperature();
       data["humidity"] = dht.readHumidity();
       delay(600);
+      data["waterInRunTime"] = waterInRunTime;
+      data["threshold"] = threshold;
+      data["dryTime"] = dryTime;
+      data["drainTime"] = drainTime;
+      data["errorTime"] = errorTime;
       if(cycling){
-          data["waterInRunTime"] = waterInRunTime;
-          data["threshold"] = threshold;
-          data["dryTime"] = dryTime;
-          data["drainTime"] = drainTime;
-          data["errorTime"] = errorTime;
+        data["cycling"] = 1;
       }
+      else{
+        data["cycling"] = 0;
+      }
+      time_t current = now();
+      data["timeHour"] = hour(current);
       return data;    
   }
 
@@ -276,9 +282,6 @@ DHT dht(DHTPIN, DHTTYPE);
 
   
   void checkForEthernetRequest(){
-
-
-    
     EthernetClient client = server.available();
     if (client) {
        digitalWrite(ACMOTOR, LOW);
@@ -346,7 +349,7 @@ DHT dht(DHTPIN, DHTTYPE);
       if (!client.find(endOfHeaders)) {
         Serial.println(F("Invalid response"));
       }
-      DynamicJsonBuffer jsonBuffer(200);
+      DynamicJsonBuffer jsonBuffer(300);
       // Parse JSON Response
       JsonObject& reply = jsonBuffer.parseObject(client);
       
@@ -355,12 +358,17 @@ DHT dht(DHTPIN, DHTTYPE);
       client.stop();
 
       if(!done){
-        getTimeFromServer();
+        getConfiguration();
       }
-  
-      setTime(reply["hour"],reply["minute"],0,reply["day"],reply["month"],2018);
+      int givenHour = reply["hour"];
+      int givenMinute = reply["minute"];
+      if(givenHour && givenMinute){
+        setTime(reply["hour"],reply["minute"],1,1,1,2018);
+      }
+      else{
+        setTime(1,1,0,2,2,2018);
+      }
       adjustCycleSettings(reply);
-      
       return;
   }
 
@@ -572,7 +580,6 @@ DHT dht(DHTPIN, DHTTYPE);
       digitalWrite(tankLedLightsPin, LOW);
     }
   }
-
 
 
   void growLights(bool state){
