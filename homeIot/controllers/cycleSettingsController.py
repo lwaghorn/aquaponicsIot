@@ -9,22 +9,22 @@ from configuration import Config
 class UpdateCycleSettings(Resource):
 
     def post(self):
-        data = ''
-        try:
-            data = request.get_json(force=True)
-        except:
-            print >>sys.stderr, "JSON request not properly formatted"
+        data = request.get_json(force=True)
         print >>sys.stderr, data
-
-        cycle_config = CycleConfigurationModel()
-        cycle_config.set_cycle_settings(data)
-        if cycle_config.verfify_settings():
-            cycle_config.save()
-            payload = cycle_config.get_dict()
-            payload['command'] = 'cycleSettings'
-            requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
-            return jsonify({'status': 'success'})
+        if data['password'] == Config.UPDATE_PASSWORD:
+            print >> sys.stderr, 'passwordpass'
+            cycle_config = CycleConfigurationModel()
+            cycle_config.set_cycle_settings(data)
+            if cycle_config.verfify_settings():
+                cycle_config.save()
+                payload = cycle_config.get_dict()
+                payload['command'] = 'cycleSettings'
+                requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
+                return jsonify({'status': 'success'})
+            else:
+                return jsonify({'status': 'error'})
         else:
+            print >> sys.stderr, 'password FAIL'
             return jsonify({'status': 'error'})
 
 
@@ -39,6 +39,7 @@ class GetConfiguration(Resource):
         response['month'] = current_time.month
         configuration = CycleConfigurationModel.get_current()
         response.update(configuration.get_dict())
+        LightModeModel.reset_modes()
         return jsonify(response)
 
 

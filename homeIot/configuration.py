@@ -5,6 +5,7 @@ class Config(object):
 	SECRET_KEY='secret!'
 	SQLALCHEMY_TRACK_MODIFICATIONS = 'FALSE'
 	ARDUINO_IP = 'http://192.168.0.2'
+	UPDATE_PASSWORD = 'fishy'
 
 
 class ProductionConfig(Config):

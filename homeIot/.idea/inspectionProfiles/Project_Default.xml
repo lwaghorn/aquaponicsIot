@@ -17,6 +17,7 @@
           <option value="flask_sqlalchemy.SQLAlchemy.Column" />
           <option value="flask_sqlalchemy.SQLAlchemy.DateTime" />
           <option value="flask_sqlalchemy.SQLAlchemy.func" />
+          <option value="flask_sqlalchemy.SQLAlchemy.String" />
         </list>
       </option>
     </inspection_tool>

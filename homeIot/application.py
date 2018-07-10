@@ -42,4 +42,4 @@ from models.models import db
 db.init_app(app)
 migrate = Migrate(app, db)
 
-app.run(host='0.0.0.0', port=5001)
+#app.run(host='0.0.0.0', port=5001)

@@ -57,7 +57,7 @@ class LightModeModel(db.Model):
 	__tablename__ = 'light_modes'
 
 	id = db.Column(db.Integer, primary_key=True)
-	light_id = db.Column(db.Integer, unique=True, nullable = False)
+	light_id = db.Column(db.Integer, unique=True, nullable=False)
 	mode = db.Column(db.Integer, nullable=False)
 	created_at = db.Column(db.DateTime, server_default=db.func.now())
 
@@ -66,9 +66,19 @@ class LightModeModel(db.Model):
 		db.session.commit()
 
 	@staticmethod
+	def reset_modes():
+		lights = LightsModel.get_all()
+		for light in lights:
+			mode_model = LightModeModel()
+			mode_model.light_id = light.get_id()
+			mode_model.mode = 2
+			mode_model.save()
+		return
+
+	@staticmethod
 	def get_mode_from_light_id(light_id):
 		model = LightModeModel()
-		mode = model.query.filter_by(light_id=light_id).first()
+		mode = model.query.filter_by(light_id=light_id).order_by('-id').first()
 		if mode is not None:
 			return mode.get_mode()
 		else:

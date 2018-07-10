@@ -11,7 +11,7 @@ $(".light-toggle-btn").click(function(){
   $(this).addClass("active");
 });
 
-//jcf.replaceAll();
+passwordKeyUps()
 
 });
 
@@ -47,11 +47,12 @@ function toggleLight(light,state){
 
 function updateCycleSettings(){
 
-  data = {'sensorThreshold' : $("#sensorThreshold").val(),
-          'drainTime' : $("#drainTime").val(),
-          'errorTime' : $("#waterRunInTime").val(),
-          'dryTime' :  $("#airrationTime").val(),
-          'password': $("#password").val()
+  data = {'threshold' : $("#sensorThreshold").val(),
+          'drainTime' : $("#drainTime").val()*1000,
+          'errorTime' : $("#waterRunInTime").val()*1000,
+          'dryTime' :  $("#airrationTime").val()*1000,
+          'password': $("#password").val(),
+          'dcPulse' : $('#dcPulse').val()*1000
         };
   $.ajax({
       type: "POST",
@@ -88,15 +89,15 @@ function loadSettings(){
 }
 
 
-function passwordKeyUp(){
-  $('.input').keypress(function (e) {
+function passwordKeyUps(){
+  $('#password').keypress(function (e) {
+  console.log('23');
   if (e.which == 13) {
     updateCycleSettings();
     return false;
   }
   else{
      //Implement password feedback thing
-
   }
 });
 }
