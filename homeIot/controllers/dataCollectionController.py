@@ -17,7 +17,7 @@ class Collect(Resource):
         atmosphere.save()
 
         feed_back = CycleFeedbackModel()
-        feed_back.log_cylce_feedback()
+        feed_back.log_cycle_feedback(data['waterInRunTime'])
         return
 
 

@@ -10,22 +10,22 @@ from flask_cors import CORS
 from controllers import cycleSettingsController, dataCollectionController, schedulerController
 
 sys.dont_write_bytecode = True
-app = Flask(__name__)
-app.config.from_object(__name__)
-app.config.update(
-                  SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:root@localhost/aquaponics',
+application = Flask(__name__)
+application.config.from_object(__name__)
+application.config.update(
+                  SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:qZL2SDXZ7uzg@aahepsdooxe5ga.cz99kvkmqcju.ca-central-1.rds.amazonaws.com/ebdb',
                   SECRET_KEY='secret!',
                   JWT_SECRET_KEY='jwt-secret-string',
                   SQLALCHEMY_TRACK_MODIFICATIONS='false',
                   TEMPLATES_AUTO_RELOAD=True
                     )
-mobileAPI = Api(app)
-CORS(app)
+mobileAPI = Api(application)
+CORS(application)
 #app.config.from_object('configuration.DevelopmentConfig')
 
 
 
-@app.route('/')
+@application.route('/')
 def landing_controller():
     return render_template('landingPage.html')
 
@@ -37,9 +37,17 @@ mobileAPI.add_resource(cycleSettingsController.Change, '/API/toggleLight')
 mobileAPI.add_resource(cycleSettingsController.UpdateCycleSettings, '/API/updateCycleSettings')
 mobileAPI.add_resource(cycleSettingsController.GetConfiguration, '/API/getConfiguration')
 mobileAPI.add_resource(cycleSettingsController.GetConfigurationAndStates, '/API/loadSettings')
+mobileAPI.add_resource(cycleSettingsController.WaterInTimeChart, '/API/waterInTimesChart')
+mobileAPI.add_resource(cycleSettingsController.CycleTimeRatiosChart, '/API/cycleTimeRatios')
 
 from models.models import db
-db.init_app(app)
-migrate = Migrate(app, db)
+db.init_app(application)
+migrate = Migrate(application, db)
 
-#app.run(host='0.0.0.0', port=5001)
+
+# run the app.
+if __name__ == "__main__":
+    # Setting debug to True enables debug output. This line should be
+    # removed before deploying a production app.
+    application.debug = False
+    #application.run(host='0.0.0.0')

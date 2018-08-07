@@ -12,6 +12,10 @@
 
 <link href="https://fonts.googleapis.com/css?family=Rubik:300,300i,400,400i" rel="stylesheet">
 
+<!-- Chart Js !-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+
+
 <!-- Custom Css -->
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='hover.css') }}">
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='jcf.css') }}">
@@ -21,9 +25,9 @@
 
 
  <header>
-        <div class="row head">
+        <div class="row head" onclick="navHome()">
 			<div class="col-md-12 mx-auto">
-				<div class="text-center">
+				<div class="text-center homeText">
 					<span class="slim">AQUAPONICS</span><span class="thick">&nbsp;IOT</span>
 				</div>
 			</div>
@@ -34,18 +38,18 @@
 
 <div class="container pageContainer" id="homeBtnsContainer">
 	<div class="row">
-		<div class="homeNavBtnCol col-md-4 col-sm-12">
+		<div class="homeNavBtnCol text-center col-lg-4">
 			<div class="btn homeNavBtn text-center hvr-fade">
 				<div class="thumbnail" onclick="navPage(this,'Controls')">
 				<img class= "homeNavIconImg" src="{{ url_for('static', filename='icons/clock.gif') }}" width="auto" />
         			<div class="caption">
-          				<span class="homeIconText">Time Schedule </span>
+          				<span class="homeIconText">Timing</span>
         			</div>
     			</div>
 			</div>			
 		</div>
 
-		<div class="homeNavBtnCol col-md-4 col-sm-12">
+		<div class="homeNavBtnCol text-center col-lg-4">
 			<div class="btn homeNavBtn m-x-auto hvr-fade" id="SettingsButton">
 				<div class="thumbnail" onclick="navPage(this,'Controls')">
 				<img class= "homeNavIconImg" src="{{ url_for('static', filename='icons/settings.gif') }}" width="auto" />
@@ -56,36 +60,29 @@
 			</div>			
 		</div>
 
-		<div class="homeNavBtnCol col-md-4 col-sm-12">
+		<div class="homeNavBtnCol text-center col-lg-4">
 			<div class="btn homeNavBtn m-x-auto hvr-fade">
-				<div class="thumbnail">
+				<div class="thumbnail" onclick="navPage(this,'Data')">
 				<img class= "homeNavIconImg" src="{{ url_for('static', filename='icons/bar-chart.gif') }}" width="auto" />
         			<div class="caption">
-          				<span class="homeIconText"> Explore Data </span>
+          				<span class="homeIconText"> Data </span>
         			</div>
     			</div>
 			</div>			
 		</div>
-
-
-
 	</div>
 </div>
 
-<div class="container pageContainer hiddenPage" id="Controls">
 
-	<!--    <div class="row text-center">
-		<span class="slim" id="titleNav">Controls</span>
-    </div>-->
+<div class="container pageContainer hiddenPage" id="Controls">
 
 	<div class="row">
 		<div class="col-md-12 mx-auto">
 			<div class="text-center">
-				<span class="slim" id="titleNav">Controls</span>
+				<span class="slim titleNav">Controls</span>
 			</div>
 		</div>
     </div>
-
 	<hr>
 	<!-- START LIGHTS SECTION -->
 	<div class="row">
@@ -94,7 +91,6 @@
 		</div>
 	</div>
 	<hr class="third">
-
 	<!-- START AQUARIUM BTN ROW -->
 	<div class="row btnRow">
 		<div class="col-lg-6 text-center">
@@ -168,39 +164,42 @@
 	</div>
 	<hr class="third" style="width: 70% ; margin-left: 15%">
 	
-	<form>
+	<form id="cycleConfigurationForm">
 		<div class="form-row text-center">
 		    <div class="form-group col-md-6 text-center" >
 		        <label for="sensorThreshold" class="control-label buttonTitle">Sensor Threshold</label>
 		        <input type="number" class="form-control configInput" id="sensorThreshold">
 		    </div>
 		    <div class="form-group col-md-6">
-		        <label for="name" class="control-label buttonTitle">Maxiumum Water Time</label>
+		        <label class="control-label buttonTitle">Maxiumum Water Time</label>
 		        <input type="number" class="form-control configInput" id="waterRunInTime">
 		    </div>
 		</div>
 		<div class="form-row text-center">
 		    <div class="form-group col-md-6">
-		        <label for="name" class="control-label buttonTitle">Airration Time</label>
+		        <label class="control-label buttonTitle">Airration Time</label>
 		        <input type="number" class="form-control configInput" id="airrationTime">
 		    </div>
 		    <div class="form-group col-md-6">
-		        <label for="name" class="control-label buttonTitle">Drain Motor Duration</label>
+		        <label  class="control-label buttonTitle">Drain Motor Duration</label>
 		        <input type="number" class="form-control configInput" id="drainTime">
 		    </div>
 		</div>
 		<div class="form-row text-center">
 		    <div class="form-group col-md-6">
-		        <label for="name" class="control-label buttonTitle">Siphon Clear Time</label>
+		        <label class="control-label buttonTitle">Siphon Clear Time</label>
 		        <input type="number" class="form-control configInput" id="dcPulse">
 		    </div>
-		    <div class="form-group col-md-6">
-		    	<label for="name" class="control-label buttonTitle">&nbsp</label>
+		    <div class="form-group col-md-6" id="passwordContainer">
+		    	<label class="control-label buttonTitle">&nbsp</label>
 		        <input type="password" class="form-control configInput" id="password" placeholder="PASSWORD">
 		    </div>
-		   
+		    <div class="form-group col-md-6" id="responseContainer" style="display:none">
+		    	<label class="control-label buttonTitle">&nbsp</label>
+		        <input type="text" class="form-control responseInput" id="response" placeholder="Success">
+		    </div>
 		</div>
-	</form>			
+	</form>
 
 
 
@@ -214,12 +213,49 @@
 </div>
 
 
+<div class="container pageContainer hiddenPage" id="Data">
+    <div class="row">
+		<div class="col-md-12 mx-auto">
+			<div class="text-center">
+				<span class="slim titleNav">Data</span>
+			</div>
+		</div>
+    </div>
+	<hr>
+    <!-- START WATER IN DATA ROW -->
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="col-sm-12 controlsSubHeader graphTitle">
+                <div class="text-center">
+                    <p> Watering Time <br /> & <br /> Overfill Prevention </p>
+                </div>
+            </div>
+            <hr>
+            <div class="col-sm-12">
+                <div class="text-center">
+                    little blurb about it all
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <canvas id="water-in-chart"></canvas>
+        </div>
+	</div>
+    <!-- END WATER IN DATA ROW -->
+	<!-- START DOUGHNUT DATA ROW -->
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            <canvas id="doughnut-chart"></canvas>
+        </div>
+	</div>
+    <!-- END DOUGHNUT DATA ROW -->
+
+</div>
+
+
 </body>
 
-<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.js') }}"></script>
-<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.number.js') }}"></script>
-<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.range.js') }}"></script>
-<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='jcf/jcf.select.js') }}"></script>
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='moment.min.js') }}"></script>
 <script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='homePage.js') }}"></script>
 
 </html>

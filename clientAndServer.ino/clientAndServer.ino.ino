@@ -29,7 +29,7 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; //physical mac address
 IPAddress ip(192,168,0,2); // ip in lan
 IPAddress gateway(192,168,0,1); // internet access via router
 IPAddress subnet(255,255,255,0); //subnet mask
-IPAddress myserver(99,253,59,150); // zoomkat web page
+IPAddress myserver(99,253,59,150);
 EthernetServer server(80); //server port
 EthernetClient client;
 String readString; 
@@ -78,6 +78,7 @@ double drainTime = 23000;
 unsigned long errorTime = 180000;
 unsigned long dryTime = 30000;
 double dcPulseTime = 500;
+unsigned long dataDelayStartTime;
 //// END GLOBALS ////
 
 
@@ -110,21 +111,26 @@ DHT dht(DHTPIN, DHTTYPE);
   Serial.begin(9600); 
   getConfiguration();
   checkLightSchedule();
-  server.begin();  
+  server.begin();
+  dataDelayStartTime = millis();  
   }
 
 
 
   
-  void loop() {   
+  void loop() {  
     checkForEthernetRequest();
     checkLightSchedule();
     if(cycling){
       cycle();
     }
-    sendData("data", readSensors() , false );    
+    unsigned long currentTime = millis();
+    unsigned long elapsedTime = currentTime - dataDelayStartTime;
+    if(elapsedTime > 60000 ){
+      dataDelayStartTime = millis();          
+      sendData("data", readSensors(), false);
+    }
   }
-
 
 
   void cycle() {
@@ -133,8 +139,6 @@ DHT dht(DHTPIN, DHTTYPE);
       waterIntoGrowBed();
       } 
   }
-
-
 
 
   void waterIntoGrowBed(){
@@ -329,7 +333,6 @@ DHT dht(DHTPIN, DHTTYPE);
    * 
    */
   void getConfiguration(){
-      bool done = true;
       //Connect to server
       if (client.connect(myserver, 80)) {
           Serial.println("connected");
@@ -341,7 +344,6 @@ DHT dht(DHTPIN, DHTTYPE);
       else {
         Serial.println("connection failed");
         Serial.println();
-        done = false;
       }
       //waitForResponse
       delay(1000);
@@ -352,21 +354,15 @@ DHT dht(DHTPIN, DHTTYPE);
       DynamicJsonBuffer jsonBuffer(300);
       // Parse JSON Response
       JsonObject& reply = jsonBuffer.parseObject(client);
-      
       reply.prettyPrintTo(Serial);
-    
       client.stop();
-
-      if(!done){
-        getConfiguration();
-      }
       int givenHour = reply["hour"];
       int givenMinute = reply["minute"];
       if(givenHour && givenMinute){
         setTime(reply["hour"],reply["minute"],1,1,1,2018);
       }
       else{
-        setTime(1,1,0,2,2,2018);
+         getConfiguration();
       }
       adjustCycleSettings(reply);
       return;

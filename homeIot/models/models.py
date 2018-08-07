@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-import datetime
+from datetime import datetime, timedelta
 import sys
 
 db = SQLAlchemy()
@@ -7,7 +7,7 @@ db = SQLAlchemy()
 
 class CycleFeedbackModel(db.Model):
 
-	__tablename__ = 'cycleFeedback'
+	__tablename__ = 'cycle_feedback'
 
 	id = db.Column(db.Integer, primary_key=True)
 	configuration_id = db.Column(db.Integer, nullable=False)
@@ -25,6 +25,20 @@ class CycleFeedbackModel(db.Model):
 		self.save()
 		return
 
+	@staticmethod
+	def get_past_feedback(days):
+		model = CycleFeedbackModel
+		past = datetime.now() - timedelta(days=days)
+		data = model.query.filter(model.created_at >= past).all()
+		return data
+
+	@staticmethod
+	def get_last_cycle():
+		obj = CycleFeedbackModel
+		return obj.query.order_by('-id').first()
+
+	def get_time_to_fill(self):
+		return self.time_to_fill
 
 class LightScheduleModel(db.Model):
 
@@ -123,7 +137,7 @@ class LightsModel(db.Model):
 
 	def get_status(self):
 		light_schedule = LightScheduleModel.get_from_light_id(self.id)
-		time = datetime.datetime.now()
+		time = datetime.now()
 		start_time = light_schedule.get_start_time()
 		stop_time = light_schedule.get_stop_time()
 		if time.hour > start_time and time.hour < stop_time:
@@ -156,6 +170,7 @@ class AtmosphereModel(db.Model):
 	temperature = db.Column(db.Float, nullable=False)
 	humidity = db.Column(db.Float, nullable=False)
 	light = db.Column(db.Float, nullable=False)
+	created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 	def save(self):
 		db.session.add(self)
@@ -164,7 +179,7 @@ class AtmosphereModel(db.Model):
 
 class CycleConfigurationModel(db.Model):
 
-	__tablename__ = 'cycleConfiguration'
+	__tablename__ = 'cycle_configuration'
 
 	id = db.Column(db.Integer, primary_key=True)
 	threshold = db.Column(db.Integer, nullable=False)
@@ -181,6 +196,15 @@ class CycleConfigurationModel(db.Model):
 	def get_current():
 		obj = CycleConfigurationModel()
 		return obj.query.order_by('-id').first()
+
+	def get_error_time(self):
+		return self.error_time
+
+	def get_dry_time(self):
+		return self.dry_time
+
+	def get_drain_time(self):
+		return self.drain_time
 
 	def set_cycle_settings(self, data):
 		self.threshold = data['threshold']
