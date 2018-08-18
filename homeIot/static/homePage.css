@@ -2,6 +2,18 @@
   --square-size: 200px;
 }
 
+.blue{
+    color: #4c959f;
+}
+
+.orange{
+    color: #FF8177;
+}
+
+.green{
+    color: #5CC36E;
+}
+
 .hiddenPage{
     display: none;
 }
@@ -153,9 +165,10 @@ input{
 }
 
 .configInput{
+  display:block;
   width: 16vw;
   height: 6vh;
-  margin-left: 7vw;
+  margin: 0 auto;
   background: transparent;
   border-radius: 16px;
   font-size: 2em;
@@ -187,7 +200,7 @@ input{
 .responseInput{
     width: 16vw;
     height: 6vh;
-    margin-left: 7vw;
+    margin: 0 auto;
     background: transparent;
     font-size: 3em;
     border : none;
@@ -195,6 +208,14 @@ input{
 
 }
 
-.graphTitle{
+.graph-title{
     font-size:1.5em;
+}
+
+.chart-text{
+    color: whitesmoke;
+}
+
+.graph-container{
+    margin-top :30px;
 }

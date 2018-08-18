@@ -224,30 +224,55 @@
 	<hr>
     <!-- START WATER IN DATA ROW -->
     <div class="row">
-        <div class="col-sm-4">
-            <div class="col-sm-12 controlsSubHeader graphTitle">
+        <div class="col-lg-4">
+            <div class="col-sm-12 controlsSubHeader graph-title">
                 <div class="text-center">
                     <p> Watering Time <br /> & <br /> Overfill Prevention </p>
                 </div>
             </div>
             <hr>
             <div class="col-sm-12">
-                <div class="text-center">
-                    little blurb about it all
+                <div class="text-left chart-text">
+                    The "Maximum Fill Time" is the maximum amount of time
+                    that the grow bed is allowed to fill with water before it assumes something is wrong, drains, and enters an error state.
+                    <br>
+                    This data allows me to monitor how close the average
+                    fill time is to my current maximum fill time.
                 </div>
             </div>
         </div>
-        <div class="col-sm-8">
+        <div class="col-lg-8 graph-container">
             <canvas id="water-in-chart"></canvas>
         </div>
 	</div>
     <!-- END WATER IN DATA ROW -->
 	<!-- START DOUGHNUT DATA ROW -->
-    <div class="row">
-        <div class="col-sm-8 offset-sm-2">
-            <canvas id="doughnut-chart"></canvas>
+    <div>
+        <div class="row graph-container">
+            <div class=" offset-md-3 col-md-3  chart-text">
+                <div class="row">
+                    Cycle Time: 30min 45s
+                </div>
+                <div class="row">
+                    <span class="blue">Water In:</span> 30min
+                </div>
+                <div class="row">
+                    <span class="orange">Water Out:</span> 30min
+                </div>
+                <div class="row">
+                    <span class="green">Aerate:</span> : 30min
+                </div>
+            </div>
+            <div class="col-md-7">
+                <canvas id="doughnut-chart"></canvas>
+            </div>
         </div>
-	</div>
+<!--        <div class="row">
+            <div class="col-sm-12 text-center controlsSubHeader">
+            Total Cycle Time :  30min 45 seconds </br> Airration : 30min Airration : 30min Airration : 30min
+            </div>
+        </div>-->
+    </div>
     <!-- END DOUGHNUT DATA ROW -->
 
 </div>

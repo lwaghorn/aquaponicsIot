@@ -173,8 +173,7 @@ function loadDataCharts() {
                 options: {
                     responsive: true,
                     title: {
-                        display: true,
-                        text: ' Time Taken to Fill Grow Bed With Water ( Seconds ) '
+                        display: false
                     },
                     scales: {
                         xAxes: [{
@@ -185,8 +184,7 @@ function loadDataCharts() {
                                 unit: 'day'
                             },
                             scaleLabel: {
-                                display: true,
-                                labelString: 'Date'
+                                display: false,
                             },
                             ticks: {
                                 major: {
@@ -200,7 +198,7 @@ function loadDataCharts() {
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'value'
+                                labelString: 'Seconds'
                             },
                             ticks: {
                                 suggestedMax: 300
@@ -249,8 +247,7 @@ function loadDataCharts() {
                         display: false
                     },
                     title: {
-                        display: true,
-                        text: 'Time Ratios'
+                        display: false
                     },
                     animation: {
                         animateScale: true,
