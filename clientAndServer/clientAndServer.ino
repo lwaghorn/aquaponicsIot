@@ -26,10 +26,12 @@
 #include <Ethernet.h>
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; //physical mac address
+IPAddress dnServer(192,168,0,1);
 IPAddress ip(192,168,0,2); // ip in lan
 IPAddress gateway(192,168,0,1); // internet access via router
 IPAddress subnet(255,255,255,0); //subnet mask
-IPAddress myserver(99,253,59,150);
+char myserver[] = "http://www.aquaponicsiot.sdhwcyirgh.ca-central-1.elasticbeanstalk.com";
+
 EthernetServer server(80); //server port
 EthernetClient client;
 String readString; 
@@ -106,7 +108,7 @@ DHT dht(DHTPIN, DHTTYPE);
   
   
   //Ethernet
-  Ethernet.begin(mac, ip, subnet, gateway);
+  Ethernet.begin(mac, ip, dnServer ,gateway, subnet);
   delay(2000); 
   Serial.begin(9600); 
   getConfiguration();
@@ -336,8 +338,7 @@ DHT dht(DHTPIN, DHTTYPE);
       //Connect to server
       if (client.connect(myserver, 80)) {
           Serial.println("connected");
-          client.print("GET /API/getConfiguration");
-          client.println(" HTTP/1.1");
+          client.println("GET /API/getConfiguration HTTP/1.0");
           client.println("Connection: close");
           client.println();
       } 
@@ -346,7 +347,7 @@ DHT dht(DHTPIN, DHTTYPE);
         Serial.println();
       }
       //waitForResponse
-      delay(1000);
+      delay(2000);
       char endOfHeaders[] = "\r\n\r\n";
       if (!client.find(endOfHeaders)) {
         Serial.println(F("Invalid response"));
@@ -359,6 +360,7 @@ DHT dht(DHTPIN, DHTTYPE);
       int givenHour = reply["hour"];
       int givenMinute = reply["minute"];
       if(givenHour && givenMinute){
+        Serial.println("Setting Time");
         setTime(reply["hour"],reply["minute"],1,1,1,2018);
       }
       else{
