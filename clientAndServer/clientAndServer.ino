@@ -16,13 +16,9 @@
 
 
 #include <TimeLib.h>
-#include <Time.h>
 #include <DHT.h>
-
-
-
+#include <NewPing.h>
 #include <ArduinoJson.h>
-#include <SPI.h>
 #include <Ethernet.h>
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; //physical mac address
@@ -52,14 +48,15 @@ String readString;
   int tankLedLightsManualOn = 2;
 
 //Pinout
+ 
+#define TRIGGER_PIN 5
+#define ECHO_PIN 6
+#define MAX_DISTANCE 200
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
 
 #define growLightsPin A2
 #define tankLedLightsPin 7
 #define tankLightPin 8
-
-
-#define TOPMOISTURE 5 //analog
-#define TOPMOISTUREPWR 5
 
 #define lightSensorPin 4 //analog
 #define DHTPIN 2 
@@ -80,7 +77,6 @@ double drainTime = 23000;
 unsigned long errorTime = 180000;
 unsigned long dryTime = 30000;
 double dcPulseTime = 500;
-unsigned long dataDelayStartTime;
 //// END GLOBALS ////
 
 
@@ -97,24 +93,23 @@ DHT dht(DHTPIN, DHTTYPE);
   pinMode(growLightsPin, OUTPUT);
   pinMode(tankLedLightsPin, OUTPUT);
 
-  //Moisture Sensors
-  pinMode(TOPMOISTURE, INPUT);
-  pinMode(TOPMOISTUREPWR, OUTPUT);
-
   digitalWrite(ACMOTOR,LOW);
   digitalWrite(DCMOTOR,LOW);
   digitalWrite(tankLightPin,LOW);
   digitalWrite(tankLedLightsPin,LOW);
   
   
+ 
   //Ethernet
   Ethernet.begin(mac, ip, dnServer ,gateway, subnet);
   delay(2000); 
   Serial.begin(9600); 
-  getConfiguration();
-  checkLightSchedule();
   server.begin();
-  dataDelayStartTime = millis();  
+  bool hasConfig = false;
+  while(!hasConfig){
+    hasConfig = getConfiguration();
+  }
+  checkLightSchedule();  
   }
 
 
@@ -124,22 +119,62 @@ DHT dht(DHTPIN, DHTTYPE);
     checkForEthernetRequest();
     checkLightSchedule();
     if(cycling){
-      cycle();
-    }
-    unsigned long currentTime = millis();
-    unsigned long elapsedTime = currentTime - dataDelayStartTime;
-    if(elapsedTime > 60000 ){
-      dataDelayStartTime = millis();          
+      waterIntoGrowBed();
       sendData("data", readSensors(), false);
-    }
+    }   
   }
 
+  
 
-  void cycle() {
-      int topMoistureVal = getMoistureReading(TOPMOISTURE , TOPMOISTUREPWR );
-      if( topMoistureVal > threshold ){
-      waterIntoGrowBed();
+   /**   SYNC TIME
+   *  
+   * Syncs arduino time with server time accurate to the min
+   */ 
+   
+  bool getConfiguration(){
+      if (client.connect(myserver, 80)) {
+          client.println("GET /API/GetConfigurationArduino HTTP/1.0");
+          client.println("Connection: close");
+          client.println();
       } 
+      else {
+        Serial.println("connection failed");
+      }
+      //waitForResponse
+      delay(3000);
+
+      // Skip HTTP headers
+      char endOfHeaders[] = "\r\n\r\n";
+      if (!client.find(endOfHeaders)) {
+        Serial.println(F("Invalid response"));
+      }
+      
+      DynamicJsonBuffer jsonBuffer(300);
+      // Parse JSON object
+      JsonObject& reply = jsonBuffer.parseObject(client);
+      if (!reply.success()) {
+        Serial.println(F("Parsing failed!"));
+      }
+      else{
+        setTime(reply["hour"],reply["minute"],1,1,1,2018);
+        reply.prettyPrintTo(Serial);
+        adjustCycleSettings(reply);
+        client.stop();
+        return true;
+      }
+      client.stop();
+      /*
+      int givenHour = reply["hour"];
+      int givenMinute = reply["minute"];
+      if(givenHour && givenMinute){
+        setTime(reply["hour"],reply["minute"],1,1,1,2018);
+      }
+      else{
+         getConfiguration();
+      }
+      adjustCycleSettings(reply);
+      */
+      return false;
   }
 
 
@@ -148,24 +183,22 @@ DHT dht(DHTPIN, DHTTYPE);
         digitalWrite(DCMOTOR, LOW);
         digitalWrite(ACMOTOR, HIGH);
         waterInStartTime = millis();
-        
-        int topMoistureVal = getMoistureReading(TOPMOISTURE , TOPMOISTUREPWR );
         unsigned long StartTime = millis();
-      
-      
-        while( topMoistureVal > threshold ){
+        unsigned int zeroCount = 0;
+        unsigned int waterHeightToTop = 200;
+        while( waterHeightToTop > threshold || waterHeightToTop == 0){
             checkForEthernetRequest();
             digitalWrite(ACMOTOR, HIGH);
-            topMoistureVal = getMoistureReading(TOPMOISTURE , TOPMOISTUREPWR );
             unsigned long CurrentTime = millis();
             waterInRunTime = CurrentTime - StartTime;  
-      
-            if(waterInRunTime > errorTime){
+            if(waterInRunTime > errorTime || zeroCount > 100){
                 digitalWrite(ACMOTOR, LOW);
                 waterOutofBed();
                 errorState();
                 return;
             }
+             waterHeightToTop = sonar.ping_cm();
+             Serial.println(waterHeightToTop);
         }
        digitalWrite(ACMOTOR, LOW);
        waterOutofBed();
@@ -183,7 +216,6 @@ DHT dht(DHTPIN, DHTTYPE);
 
 
   void waterOutofBed(){
-      Serial.println("Water Out");
       digitalWrite(DCMOTOR, HIGH);
       digitalWrite(ACMOTOR, LOW );
       delayWithEthernet(drainTime);
@@ -209,26 +241,9 @@ DHT dht(DHTPIN, DHTTYPE);
 
     
   void errorState(){
-    Serial.println("Error State");  
     cycling = false;
     }
     
-
-
-  int getMoistureReading(int readPin , int powerPin ){
-      //Turn Sensor On
-      digitalWrite(powerPin, HIGH);    
-      delay(400);
-      //Get sensor value
-      int data = analogRead(readPin);
-      //Turn Sensor Off
-      digitalWrite(powerPin, LOW);
-      return data;  
-  }
-
-
-
-
   
   JsonObject& readSensors(){
       DynamicJsonBuffer jsonBuffer(200);
@@ -296,15 +311,13 @@ DHT dht(DHTPIN, DHTTYPE);
         if (client.available()) {
               char endOfHeaders[] = "\r\n\r\n";
               if (!client.find(endOfHeaders)) {
-                Serial.println(F("Invalid response"));
+               
               }
               // Allocate JsonBuffer
               DynamicJsonBuffer jsonBuffer(200);
               // Parse JSON object
               JsonObject& root = jsonBuffer.parseObject(client);
-              if (!root.success()) {
-                Serial.println(F("Parsing failed!"));
-                  //Send Error      
+              if (!root.success()) {   
                 client.println("HTTP/1.0 200 OK");
                 client.println("Content-Type: text/html");
                 client.println();
@@ -329,47 +342,7 @@ DHT dht(DHTPIN, DHTTYPE);
     }
   }
   
-  /**   SYNC TIME
-   *  
-   * Syncs arduino time with server time accurate to the min
-   * 
-   */
-  void getConfiguration(){
-      //Connect to server
-      if (client.connect(myserver, 80)) {
-          Serial.println("connected");
-          client.println("GET /API/getConfiguration HTTP/1.0");
-          client.println("Connection: close");
-          client.println();
-      } 
-      else {
-        Serial.println("connection failed");
-        Serial.println();
-      }
-      //waitForResponse
-      delay(2000);
-      char endOfHeaders[] = "\r\n\r\n";
-      if (!client.find(endOfHeaders)) {
-        Serial.println(F("Invalid response"));
-      }
-      DynamicJsonBuffer jsonBuffer(300);
-      // Parse JSON Response
-      JsonObject& reply = jsonBuffer.parseObject(client);
-      reply.prettyPrintTo(Serial);
-      client.stop();
-      int givenHour = reply["hour"];
-      int givenMinute = reply["minute"];
-      if(givenHour && givenMinute){
-        Serial.println("Setting Time");
-        setTime(reply["hour"],reply["minute"],1,1,1,2018);
-      }
-      else{
-         getConfiguration();
-      }
-      adjustCycleSettings(reply);
-      return;
-  }
-
+ 
 
 
   
@@ -395,31 +368,7 @@ DHT dht(DHTPIN, DHTTYPE);
         } 
         else {
           Serial.println("connection failed");
-          Serial.println();
         }
-  
-        if(getResponse){
-            //waitForResponse
-            delay(1000);
-            char endOfHeaders[] = "\r\n\r\n";
-            if (!client.find(endOfHeaders)) {
-              Serial.println(F("Invalid response"));
-            }
-            DynamicJsonBuffer jsonBuffer(200);          
-           // Parse JSON Response
-            JsonObject& reply = jsonBuffer.parseObject(client);
-            client.stop();
-            return reply;
-       
-        }
-        else{
-            client.stop();
-            return root;
-        }
-  
-        
-  
-        
   }
   
   
@@ -432,8 +381,6 @@ DHT dht(DHTPIN, DHTTYPE);
    * interpreted
    */
   void readRequest(JsonObject& root){
-    
-    root.prettyPrintTo(Serial);
     String command = root["command"];
     
     if( command == "LED"){
@@ -445,14 +392,8 @@ DHT dht(DHTPIN, DHTTYPE);
     else if( command =="cycleSettings"){
       adjustCycleSettings(root);
     }
-    else if( command == "ChangeLightCycleTime"){
-      updateLightSchedule(root);
-    }
     else if ( command == "manualLightSwitch"){
      manualLightSwitch(root);
-    }
-    else if (command == "LightOn"){
-      
     }
   }
 
@@ -460,9 +401,7 @@ DHT dht(DHTPIN, DHTTYPE);
       
       double givenThreshold  = root["threshold"];
       if(givenThreshold){
-        if(givenThreshold > 200 && givenThreshold < 600 ){
           threshold = givenThreshold;
-        }      
       }
       double givenDrainTime = root["drainTime"]; 
       if(givenDrainTime){
@@ -513,39 +452,8 @@ DHT dht(DHTPIN, DHTTYPE);
   }
 
 
-  
-
-  //TODO update multiple lights at once using nested json strucure which has an update flag  
-  void updateLightSchedule(JsonObject& root){
     
-    int startHour = root["startHour"];
-    int stopHour = root["stopHour"];
-
-    String light = root["light"];
-
-    if(light == "tankLights" ){
-      tankLightsTimes[0] = startHour;
-      tankLightsTimes[1] = stopHour ;
-    }
-
-    else if(light == "tankLedLights"){
-      tankLedLightsTimes[0] = startHour;
-      tankLedLightsTimes[1] = stopHour;
-    }
-
-    else if(light == "growLights"){
-      growLightsTimes[0] = startHour;
-      growLightsTimes[1] = stopHour;
-    
-    }
-   checkLightSchedule;  
- }
-
-
-
-    
-  void tankLights(bool state){
-    
+  void tankLights(bool state){ 
     if(tankLightsManualOn==1){
       digitalWrite(tankLightPin, HIGH);
     }
@@ -558,13 +466,11 @@ DHT dht(DHTPIN, DHTTYPE);
     else if(!state){
       digitalWrite(tankLightPin, LOW);
     }
-
   }
 
 
 
-  void tankLedLights(bool state){
-    
+  void tankLedLights(bool state){   
     if(tankLedLightsManualOn==1){
       digitalWrite(tankLedLightsPin, HIGH);
     }

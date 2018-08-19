@@ -1,4 +1,3 @@
-
 //TODO 
 
 /* 
@@ -79,6 +78,21 @@ double threshold = 510;
 double drainTime = 23000;
 unsigned long errorTime = 180000;
 unsigned long dryTime = 30000;
+
+unsigned long drsyTime = 30000;
+unsigned long dryTidme = 30000;
+unsigned long dryzTime = 30000;
+unsigned long dryTicxme = 30000;
+unsigned long dryTcime = 30000;
+unsigned long dryTvime = 30000;
+unsigned long dryTibme = 30000;
+unsigned long dryTizme = 30000;
+unsigned long dryTxime = 30000;
+unsigned long dryTimne = 30000;
+unsigned long dryTimre = 30000;
+
+
+
 double dcPulseTime = 500;
 unsigned long dataDelayStartTime;
 //// END GLOBALS ////
@@ -119,30 +133,45 @@ DHT dht(DHTPIN, DHTTYPE);
 
   
   void loop() {
+  //Connect to server
+      if (client.connect(myserver, 80)) {
+          Serial.println("connected");
+          client.println("GET /API/getConfiguration HTTP/1.0");
+          client.println("Connection: close");
+          client.println();
+      } 
+      else {
+        Serial.println("connection failed");
+        Serial.println();
+      }
+      //waitForResponse
+      delay(3000);
+
+      // Skip HTTP headers
+      char endOfHeaders[] = "\r\n\r\n";
+      if (!client.find(endOfHeaders)) {
+        Serial.println(F("Invalid response"));
+      }
     
-    if (client.connect(myserver, 80)) {
-     Serial.println("connected");
-     // Make a HTTP request:
-     client.println("GET /API/getConfiguration HTTP/1.0");
-     client.println();
-    } 
-    else {
-     // if you didn't get a connection to the server:
-     Serial.println("connection failed");
-    }
+      DynamicJsonBuffer jsonBuffer(420);
+    
+      // Parse JSON object
+      JsonObject& reply = jsonBuffer.parseObject(client);
+      if (!reply.success()) {
+        Serial.println(F("Parsing failed!"));
+      }
 
-
-   // if the server's disconnected, stop the client:
-   if (!client.connected()) {
-     Serial.println();
-     Serial.println("disconnecting.");
-     client.stop();
-     // do nothing forevermore:
-     while(true);
-   }
-   
+      reply.prettyPrintTo(Serial);
+      client.stop();
+      int givenHour = reply["hour"];
+      int givenMinute = reply["minute"];
+      if(givenHour && givenMinute){
+        Serial.println("Setting Time");
+        while(true){}
+      }
       
   }
+  
 
 
   

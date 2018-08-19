@@ -37,10 +37,22 @@ class GetConfiguration(Resource):
 		response = dict()
 		response['hour'] = current_time.hour
 		response['minute'] = current_time.minute
-		response['day'] = current_time.day
-		response['month'] = current_time.month
 		configuration = CycleConfigurationModel.get_current()
 		response.update(configuration.get_dict())
+		LightModeModel.reset_modes()
+		return jsonify(response)
+
+
+class GetConfigurationArduino(Resource):
+
+	def get(self):
+		current_time = datetime.now()
+		response = dict()
+		response['hour'] = current_time.hour
+		response['minute'] = current_time.minute
+		configuration = CycleConfigurationModel.get_current()
+		response.update(configuration.get_dict())
+		response.pop('dcPulse', None)
 		LightModeModel.reset_modes()
 		return jsonify(response)
 

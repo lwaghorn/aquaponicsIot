@@ -39,6 +39,8 @@ mobileAPI.add_resource(cycleSettingsController.GetConfiguration, '/API/getConfig
 mobileAPI.add_resource(cycleSettingsController.GetConfigurationAndStates, '/API/loadSettings')
 mobileAPI.add_resource(cycleSettingsController.WaterInTimeChart, '/API/waterInTimesChart')
 mobileAPI.add_resource(cycleSettingsController.CycleTimeRatiosChart, '/API/cycleTimeRatios')
+mobileAPI.add_resource(cycleSettingsController.GetConfigurationArduino, '/API/GetConfigurationArduino')
+
 
 from models.models import db
 db.init_app(application)
