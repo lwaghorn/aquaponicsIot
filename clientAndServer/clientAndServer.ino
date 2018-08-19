@@ -17,7 +17,6 @@
 
 #include <TimeLib.h>
 #include <DHT.h>
-#include <NewPing.h>
 #include <ArduinoJson.h>
 #include <Ethernet.h>
 
@@ -48,11 +47,9 @@ String readString;
   int tankLedLightsManualOn = 2;
 
 //Pinout
- 
-#define TRIGGER_PIN 5
-#define ECHO_PIN 6
-#define MAX_DISTANCE 200
-NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+
+#define TOPMOISTURE 3 //analog
+#define TOPMOISTUREPWR 6
 
 #define growLightsPin A2
 #define tankLedLightsPin 7
@@ -97,6 +94,10 @@ DHT dht(DHTPIN, DHTTYPE);
   digitalWrite(DCMOTOR,LOW);
   digitalWrite(tankLightPin,LOW);
   digitalWrite(tankLedLightsPin,LOW);
+
+  //Moisture Sensors
+  pinMode(TOPMOISTURE, INPUT);
+  pinMode(TOPMOISTUREPWR, OUTPUT);
   
   
  
@@ -119,9 +120,16 @@ DHT dht(DHTPIN, DHTTYPE);
     checkForEthernetRequest();
     checkLightSchedule();
     if(cycling){
-      waterIntoGrowBed();
+      cycle();
       sendData("data", readSensors(), false);
     }   
+  }
+
+  void cycle(){  
+     int overFlow = getMoistureReading(TOPMOISTURE , TOPMOISTUREPWR );
+     if(overFlow > threshold){
+        waterIntoGrowBed();
+     }  
   }
 
   
@@ -163,17 +171,6 @@ DHT dht(DHTPIN, DHTTYPE);
         return true;
       }
       client.stop();
-      /*
-      int givenHour = reply["hour"];
-      int givenMinute = reply["minute"];
-      if(givenHour && givenMinute){
-        setTime(reply["hour"],reply["minute"],1,1,1,2018);
-      }
-      else{
-         getConfiguration();
-      }
-      adjustCycleSettings(reply);
-      */
       return false;
   }
 
@@ -183,22 +180,16 @@ DHT dht(DHTPIN, DHTTYPE);
         digitalWrite(DCMOTOR, LOW);
         digitalWrite(ACMOTOR, HIGH);
         waterInStartTime = millis();
+        waterInRunTime = 0;
         unsigned long StartTime = millis();
-        unsigned int zeroCount = 0;
-        unsigned int waterHeightToTop = 200;
-        while( waterHeightToTop > threshold || waterHeightToTop == 0){
+
+        int overFlow = getMoistureReading(TOPMOISTURE , TOPMOISTUREPWR );
+        
+        while( waterInRunTime < errorTime && overFlow > threshold ){
             checkForEthernetRequest();
-            digitalWrite(ACMOTOR, HIGH);
             unsigned long CurrentTime = millis();
             waterInRunTime = CurrentTime - StartTime;  
-            if(waterInRunTime > errorTime || zeroCount > 100){
-                digitalWrite(ACMOTOR, LOW);
-                waterOutofBed();
-                errorState();
-                return;
-            }
-             waterHeightToTop = sonar.ping_cm();
-             Serial.println(waterHeightToTop);
+            overFlow = getMoistureReading(TOPMOISTURE , TOPMOISTUREPWR );
         }
        digitalWrite(ACMOTOR, LOW);
        waterOutofBed();
@@ -212,6 +203,16 @@ DHT dht(DHTPIN, DHTTYPE);
     return;   
     }
 
+  int getMoistureReading(int readPin , int powerPin ){
+      //Turn Sensor On
+      digitalWrite(powerPin, HIGH);    
+      delay(400);
+      //Get sensor value
+      int data = analogRead(readPin);
+      //Turn Sensor Off
+      digitalWrite(powerPin, LOW);
+      return data;  
+  }
 
 
 
@@ -267,8 +268,7 @@ DHT dht(DHTPIN, DHTTYPE);
       data["timeHour"] = hour(current);
       return data;    
   }
-
-
+ 
    
   void checkLightSchedule(){
     

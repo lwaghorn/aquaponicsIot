@@ -6,6 +6,7 @@ from datetime import datetime
 from models.models import CycleConfigurationModel, LightsModel, LightModeModel, CycleFeedbackModel
 from configuration import Config
 import time
+import pytz
 
 
 class UpdateCycleSettings(Resource):
@@ -46,10 +47,12 @@ class GetConfiguration(Resource):
 class GetConfigurationArduino(Resource):
 
 	def get(self):
-		current_time = datetime.now()
+		utc_time = datetime.now()
+		timezone = pytz.timezone("Canada/Newfoundland")
+		local_time = timezone.localize(utc_time)
 		response = dict()
-		response['hour'] = current_time.hour
-		response['minute'] = current_time.minute
+		response['hour'] = local_time.hour
+		response['minute'] = local_time.minute
 		configuration = CycleConfigurationModel.get_current()
 		response.update(configuration.get_dict())
 		response.pop('dcPulse', None)
