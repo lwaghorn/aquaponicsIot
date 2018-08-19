@@ -4,3 +4,4 @@ configuration.py
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+workspace.xml
