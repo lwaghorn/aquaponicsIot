@@ -121,46 +121,100 @@ function loadSettings() {
 function loadDataCharts() {
     $.ajax({
         type: "POST",
-        url: "API/waterInTimesChart",
+        url: "API/temperatureHumidityChart",
         //data : JSON.stringify(data),
         ContentType: "application/json",
         success: function(response) {
 
-            var waterFillTimes = response['fill_time_data'];
-            for (var i = 0; i < waterFillTimes.length; i++) {
-                waterFillTimes[i].x = moment.unix(waterFillTimes[i].x).toDate();
+            var temperature = response['temperature'];
+            for (var i = 0; i < temperature.length; i++) {
+                temperature[i].x = moment.unix(temperature[i].x).toDate();
             }
-            var maxFillTime = response['maximum_fill_time_data'];
-            for (var i = 0; i < maxFillTime.length; i++) {
-                maxFillTime[i].x = moment.unix(maxFillTime[i].x).toDate();
+            var humidity = response['humidity'];
+            for (var i = 0; i < humidity.length; i++) {
+                humidity[i].x = moment.unix(humidity[i].x).toDate();
             }
 
-            var ctx = document.getElementById("water-in-chart").getContext('2d');
-            var gradient = ctx.createLinearGradient(0, 300, 0, 0);
+
+
+            var tempCtx = document.getElementById("temperature-chart").getContext('2d');
+            var humidityCtx = document.getElementById("humidity-chart").getContext('2d');
+
+            var gradient = tempCtx.createLinearGradient(0, 300, 0, 0);
             gradient.addColorStop(0, backgroundColor);
             gradient.addColorStop(1, "#4c959f");
-            ctx.fillStyle = gradient;
-            ctx.fillRect(10, 10, 200, 100);
-            var lineConfig = {
+            tempCtx.fillStyle = gradient;
+            tempCtx.fillRect(10, 10, 200, 100);
+
+
+
+            var temperatureConfig = {
 
                 type: 'line',
                 data: {
                     datasets: [
                         //
                         {
-                            label: 'Time to Fill',
-                            lineTension: 0.5,
-                            data: waterFillTimes,
+                            label: 'Temperature',
+                            lineTension: 0.1,
+                            data: temperature,
                             backgroundColor: gradient,
                             borderColor: "#4c959f",
                             fill: true,
                             pointBackgroundColor: 'white',
                             pointRadius: 1,
                             pointHoverRadius: 2,
-                        }, {
-                            label: 'Maximum Allowed Time',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: false
+                    },
+                    scales: {
+                        xAxes: [{
+                            min: 10,
+                            type: 'time',
+                            display: true,
+                            time: {
+                                unit: 'day'
+                            },
+                            scaleLabel: {
+                                display: false,
+                            },
+                            ticks: {
+                                major: {
+                                    fontStyle: 'bold',
+                                    fontColor: '#FF0000'
+                                }
+                            }
+
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Seconds'
+                            },
+                            ticks: {
+
+                            }
+                        }]
+                    }
+                },
+            };
+
+
+            var humidityConfig = {
+
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Humidity',
                             lineTension: 0,
-                            data: maxFillTime,
+                            data: humidity,
                             borderColor: "#e5766d",
                             fill: false,
                             pointBackgroundColor: 'white',
@@ -201,14 +255,15 @@ function loadDataCharts() {
                                 labelString: 'Seconds'
                             },
                             ticks: {
-                                suggestedMax: 300
+
                             }
                         }]
                     }
                 },
             };
 
-            var chart = new Chart(ctx, lineConfig);
+            var tempChart = new Chart(tempCtx, temperatureConfig);
+            var humidChart = new Chart(humidityCtx, humidityConfig);
 
         }
     });

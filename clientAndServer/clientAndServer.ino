@@ -120,8 +120,8 @@ DHT dht(DHTPIN, DHTTYPE);
     checkForEthernetRequest();
     checkLightSchedule();
     if(cycling){
-      cycle();
       sendData("data", readSensors(), false);
+      cycle();
     }   
   }
 
@@ -172,6 +172,27 @@ DHT dht(DHTPIN, DHTTYPE);
       }
       client.stop();
       return false;
+  }
+
+  int readLightSensor(){
+    int total = 0;
+    int samples = 20;
+    for(int i = 0 ; i<20 ; i++){
+        int val = analogRead(lightSensorPin);
+        if(val == 0){
+          samples--;
+        }
+        else{
+          total += val;
+        }
+        delay(200);
+    }
+    if(samples > 0){
+      return total/samples;
+    }
+    else{
+      return 0;
+    }
   }
 
 
@@ -247,9 +268,9 @@ DHT dht(DHTPIN, DHTTYPE);
     
   
   JsonObject& readSensors(){
-      DynamicJsonBuffer jsonBuffer(200);
+      DynamicJsonBuffer jsonBuffer(300);
       JsonObject& data = jsonBuffer.createObject();
-      data["light"] = analogRead(lightSensorPin);
+      data["light"] = readLightSensor();
       data["temperature"] = dht.readTemperature();
       data["humidity"] = dht.readHumidity();
       delay(600);
@@ -354,10 +375,10 @@ DHT dht(DHTPIN, DHTTYPE);
   JsonObject&  sendData(String destination , JsonObject& root, bool getResponse){
         
         if (client.connect(myserver, 80)) {
-            Serial.println("connected");
+            Serial.println("connected to send Data");
             client.print("POST /API/");
             client.print(destination);
-            client.println(" HTTP/1.1");
+            client.println(" HTTP/1.0");
             client.println("User-Agent: Arduino");
             client.println("Connection: close");
             client.println("Content-Type: application/json;");
@@ -365,9 +386,10 @@ DHT dht(DHTPIN, DHTTYPE);
             client.println(root.measureLength());
             client.println();
             root.printTo(client);
+            client.stop();
         } 
         else {
-          Serial.println("connection failed");
+          Serial.println("connection failed sending data");
         }
   }
   

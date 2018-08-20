@@ -176,6 +176,13 @@ class AtmosphereModel(db.Model):
 		db.session.add(self)
 		db.session.commit()
 
+	@staticmethod
+	def get_past_feedback(days):
+		model = AtmosphereModel
+		past = datetime.now() - timedelta(days=days)
+		data = model.query.filter(model.created_at >= past).all()
+		return data
+
 
 class CycleConfigurationModel(db.Model):
 

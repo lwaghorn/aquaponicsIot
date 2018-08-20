@@ -3,7 +3,7 @@ import sys, os, time, requests, json
 from flask_restful import Resource, reqparse
 from flask import jsonify, request
 from datetime import datetime
-from models.models import CycleConfigurationModel, LightsModel, LightModeModel, CycleFeedbackModel
+from models.models import CycleConfigurationModel, LightsModel, LightModeModel, CycleFeedbackModel, AtmosphereModel
 from configuration import Config
 import time
 from pytz import timezone
@@ -94,7 +94,7 @@ class WaterInTimeChart(Resource):
 
 	def post(self):
 		# Get Past Feedback for 3 days
-		fill_times = CycleFeedbackModel.get_past_feedback(3)
+		fill_times = AtmosphereModel.get_past_feedback(3)
 		fill_time_coordinates = []
 		for log in fill_times:
 			point = dict()

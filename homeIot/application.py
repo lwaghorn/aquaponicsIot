@@ -7,7 +7,7 @@ import sys
 from flask_cors import CORS
 
 #sys.path.append('/home/liam/Developement/Flask/AquaponicsIot/aquaponicsIot/homeIot/')
-from controllers import cycleSettingsController, dataCollectionController, schedulerController
+from controllers import cycleSettingsController, dataCollectionController, schedulerController, chartController
 
 sys.dont_write_bytecode = True
 application = Flask(__name__)
@@ -40,6 +40,8 @@ mobileAPI.add_resource(cycleSettingsController.GetConfigurationAndStates, '/API/
 mobileAPI.add_resource(cycleSettingsController.WaterInTimeChart, '/API/waterInTimesChart')
 mobileAPI.add_resource(cycleSettingsController.CycleTimeRatiosChart, '/API/cycleTimeRatios')
 mobileAPI.add_resource(cycleSettingsController.GetConfigurationArduino, '/API/GetConfigurationArduino')
+mobileAPI.add_resource(chartController.TemperatureHumidity, '/API/temperatureHumidityChart')
+
 
 
 from models.models import db
