@@ -145,6 +145,9 @@ class LightsModel(db.Model):
 		else:
 			return 0
 
+	def get_light_schedule(self):
+		return LightScheduleModel.get_from_light_id(self.id)
+
 	def get_mode(self):
 		return LightModeModel.get_mode_from_light_id(self.id)
 

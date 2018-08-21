@@ -224,34 +224,69 @@
 	<hr>
     <!-- START WATER IN DATA ROW -->
     <div class="row">
-<!--        <div class="col-lg-6">
-            <div class="col-sm-12 controlsSubHeader graph-title">
-                <div class="text-center">
-                    <p> Watering Time <br /> & <br /> Overfill Prevention </p>
-                </div>
-            </div>
-            <hr>
-            <div class="col-sm-12">
-                <div class="text-left chart-text">
-                    The "Maximum Fill Time" is the maximum amount of time
-                    that the grow bed is allowed to fill with water before it assumes something is wrong, drains, and enters an error state.
-                    <br>
-                    This data allows me to monitor how close the average
-                    fill time is to my current maximum fill time.
-                </div>
-            </div>
-        </div>-->
 		<div class="col-lg-6 graph-container">
-            <canvas id="humidity-chart"></canvas>
+			<div class="row">
+				<div class="col-md-12 mx-auto text-center">
+					<p class="controlsSubHeader">Humidity</p>
+				</div>
+			</div>
+			<div class="row">
+				<canvas id="humidity-chart"></canvas>
+			</div>
         </div>
         <div class="col-lg-6 graph-container">
-            <canvas id="temperature-chart"></canvas>
+			<div class="row">
+				<div class="col-md-12 mx-auto text-center">
+					<p class="controlsSubHeader">Temperature</p>
+				</div>
+			</div>
+			<div>
+				<canvas id="temperature-chart"></canvas>
+			</div>
         </div>
 	</div>
     <!-- END WATER IN DATA ROW -->
 	<!-- START DOUGHNUT DATA ROW -->
-    <div>
-        <div class="row graph-container">
+<div class="row">
+	<div class="col-md-6">
+			<div class="row">
+				<div class="col-md-12 mx-auto text-center">
+					<p class="controlsSubHeader">Water Cycle</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<canvas id="doughnut-chart-water-cycle"></canvas>
+				</div>
+			</div>
+	</div>
+	<div class="col-md-6">
+		<div class="row">
+			<div class="col-md-12 mx-auto text-center">
+				<p class="controlsSubHeader">Grow Light Cycle</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<canvas id="doughnut-chart-light-cycle"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
+    <!-- END DOUGHNUT DATA ROW -->
+
+</div>
+
+
+</body>
+
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='moment.min.js') }}"></script>
+<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='homePage.js') }}"></script>
+
+</html>
+
+<!--
+
             <div class=" offset-md-3 col-md-3  chart-text">
                 <div class="row">
                     Cycle Time: 30min 45s
@@ -265,27 +300,4 @@
                 <div class="row">
                     <span class="green">Aerate:</span> : 30min
                 </div>
-            </div>
-            <div class="col-md-7">
-                <canvas id="doughnut-chart"></canvas>
-            </div>
-        </div>
-<!--        <div class="row">
-            <div class="col-sm-12 text-center controlsSubHeader">
-            Total Cycle Time :  30min 45 seconds </br> Airration : 30min Airration : 30min Airration : 30min
-            </div>
-        </div>-->
-    </div>
-    <!-- END DOUGHNUT DATA ROW -->
-
-</div>
-
-
-</body>
-
-<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='moment.min.js') }}"></script>
-<script language="JavaScript" type="text/javascript" src="{{ url_for('static', filename='homePage.js') }}"></script>
-
-</html>
-
-
+            </div>-->

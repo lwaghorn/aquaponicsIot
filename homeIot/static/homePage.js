@@ -1,4 +1,7 @@
-var backgroundColor = '#231e1f'
+var backgroundColor = '#231e1f';
+var blue = "#4c959f";
+var orange = "#ff8278";
+var white = "#B0B0B0";
 
 
 $(document).ready(function() {
@@ -119,6 +122,9 @@ function loadSettings() {
 
 
 function loadDataCharts() {
+
+    //TODO Chunk these into one ajax call lmao
+
     $.ajax({
         type: "POST",
         url: "API/temperatureHumidityChart",
@@ -140,10 +146,16 @@ function loadDataCharts() {
             var tempCtx = document.getElementById("temperature-chart").getContext('2d');
             var humidityCtx = document.getElementById("humidity-chart").getContext('2d');
 
-            var gradient = tempCtx.createLinearGradient(0, 300, 0, 0);
-            gradient.addColorStop(0, backgroundColor);
-            gradient.addColorStop(1, "#4c959f");
-            tempCtx.fillStyle = gradient;
+            var blueGradient = humidityCtx.createLinearGradient(0, 300, 0, 0);
+            blueGradient.addColorStop(0, backgroundColor);
+            blueGradient.addColorStop(1, blue);
+            humidityCtx.fillStyle = blueGradient;
+            humidityCtx.fillRect(10, 10, 200, 100);
+
+            var orangeGradient = tempCtx.createLinearGradient(0, 300, 0, 0);
+            orangeGradient.addColorStop(0, backgroundColor);
+            orangeGradient.addColorStop(1, orange);
+            tempCtx.fillStyle = orangeGradient;
             tempCtx.fillRect(10, 10, 200, 100);
 
 
@@ -158,18 +170,21 @@ function loadDataCharts() {
                             label: 'Temperature',
                             lineTension: 0.1,
                             data: temperature,
-                            backgroundColor: gradient,
-                            borderColor: "#4c959f",
+                            backgroundColor: orangeGradient,
+                            borderColor: orange,
                             fill: true,
                             pointBackgroundColor: 'white',
-                            pointRadius: 1,
-                            pointHoverRadius: 2,
+                            pointRadius: 0,
+                            borderWidth: 1,
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     title: {
+                        display: false
+                    },
+                    legend:{
                         display: false
                     },
                     scales: {
@@ -184,21 +199,26 @@ function loadDataCharts() {
                                 display: false,
                             },
                             ticks: {
+
+                                fontColor:white,
+
                                 major: {
-                                    fontStyle: 'bold',
+                                    fontStyle: 'slim',
                                     fontColor: '#FF0000'
                                 }
                             }
 
                         }],
                         yAxes: [{
+
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Seconds'
+                                 fontColor:white,
+                                labelString: 'Temperature °C'
                             },
                             ticks: {
-
+                                fontColor:white,
                             }
                         }]
                     }
@@ -215,8 +235,9 @@ function loadDataCharts() {
                             label: 'Humidity',
                             lineTension: 0,
                             data: humidity,
-                            borderColor: "#e5766d",
-                            fill: false,
+                            borderColor: blue,
+                            fill: true,
+                            backgroundColor: blueGradient,
                             pointBackgroundColor: 'white',
                             pointRadius: 0,
                             borderWidth: 1,
@@ -227,6 +248,9 @@ function loadDataCharts() {
                 options: {
                     responsive: true,
                     title: {
+                        display: false
+                    },
+                    legend:{
                         display: false
                     },
                     scales: {
@@ -241,6 +265,7 @@ function loadDataCharts() {
                                 display: false,
                             },
                             ticks: {
+                             fontColor:white,
                                 major: {
                                     fontStyle: 'bold',
                                     fontColor: '#FF0000'
@@ -251,20 +276,19 @@ function loadDataCharts() {
                         yAxes: [{
                             display: true,
                             scaleLabel: {
+                             fontColor:white,
                                 display: true,
-                                labelString: 'Seconds'
+                                labelString: 'Relative Humidity'
                             },
                             ticks: {
-
+                                 fontColor:white,
                             }
                         }]
                     }
                 },
             };
-
             var tempChart = new Chart(tempCtx, temperatureConfig);
             var humidChart = new Chart(humidityCtx, humidityConfig);
-
         }
     });
 
@@ -273,6 +297,7 @@ function loadDataCharts() {
         url: "API/cycleTimeRatios",
         ContentType: "application/json",
         success: function(response) {
+            console.log(response)
             airTime = response['air_time'];
             DrainTime = response['drain_time'];
             fillTime = response['fill_time'];
@@ -311,11 +336,57 @@ function loadDataCharts() {
                     rotation: -0.8 * Math.PI,
                 }
             };
-
-        var doughnutCtx = document.getElementById('doughnut-chart').getContext('2d');
+        var doughnutCtx = document.getElementById('doughnut-chart-water-cycle').getContext('2d');
         window.myDoughnut = new Chart(doughnutCtx, doughnutConfig);
         }
     });
+
+        $.ajax({
+        type: "POST",
+        url: "API/lightTimeRatios",
+        ContentType: "application/json",
+        success: function(response) {
+            onTime = response['on_time'];
+            offTime = response['off_time'];
+
+            var doughnutConfig = {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [
+                            onTime,offTime
+                        ],
+                        backgroundColor: [
+                            orange, "#615356"
+                        ],
+                        label: 'Dataset 1',
+                        borderColor: backgroundColor,
+                        borderWidth: 10,
+                    }],
+                    labels: [
+                        'Light Phase',
+                        'Dark Phase'
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    },
+                }
+            };
+        var doughnutCtx = document.getElementById('doughnut-chart-light-cycle').getContext('2d');
+        window.myDoughnut = new Chart(doughnutCtx, doughnutConfig);
+        }
+    });
+
 }
 
 function passwordKeyUps() {

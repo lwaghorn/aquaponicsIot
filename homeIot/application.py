@@ -37,10 +37,11 @@ mobileAPI.add_resource(cycleSettingsController.Change, '/API/toggleLight')
 mobileAPI.add_resource(cycleSettingsController.UpdateCycleSettings, '/API/updateCycleSettings')
 mobileAPI.add_resource(cycleSettingsController.GetConfiguration, '/API/getConfiguration')
 mobileAPI.add_resource(cycleSettingsController.GetConfigurationAndStates, '/API/loadSettings')
-mobileAPI.add_resource(cycleSettingsController.WaterInTimeChart, '/API/waterInTimesChart')
-mobileAPI.add_resource(cycleSettingsController.CycleTimeRatiosChart, '/API/cycleTimeRatios')
 mobileAPI.add_resource(cycleSettingsController.GetConfigurationArduino, '/API/GetConfigurationArduino')
+
 mobileAPI.add_resource(chartController.TemperatureHumidity, '/API/temperatureHumidityChart')
+mobileAPI.add_resource(chartController.CycleTimeRatiosChart, '/API/cycleTimeRatios')
+mobileAPI.add_resource(chartController.LightTimeRatiosChart, '/API/lightTimeRatios')
 
 
 
