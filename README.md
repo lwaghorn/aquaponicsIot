@@ -1,4 +1,6 @@
 # aquaponicsIot
+# Visit Site [Here](http://aquaponicsiot.sdhwcyirgh.ca-central-1.elasticbeanstalk.com/)
+
 
 ![alt text](https://github.com/lwaghorn/aquaponicsIot/blob/master/pictures/3488483907_4e92114664_o.png)
 
