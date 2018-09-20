@@ -1,11 +1,12 @@
 import os
+import sys
+sys.path.append("/opt/python/current/app/homeIot")
+
 from flask import Flask, render_template
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-import sys
 from flask_cors import CORS
-
 #sys.path.append('/home/liam/Developement/Flask/AquaponicsIot/aquaponicsIot/homeIot/')
 from controllers import cycleSettingsController, dataCollectionController, schedulerController, chartController
 
@@ -21,8 +22,6 @@ application.config.update(
                     )
 mobileAPI = Api(application)
 CORS(application)
-#app.config.from_object('configuration.DevelopmentConfig')
-
 
 
 @application.route('/')
@@ -56,3 +55,4 @@ if __name__ == "__main__":
     # removed before deploying a production app.
     application.debug = False
     application.run()
+
