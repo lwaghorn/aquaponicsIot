@@ -4,7 +4,7 @@ class Config(object):
 	SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@localhost/QuickHire'	
 	SECRET_KEY='secret!'
 	SQLALCHEMY_TRACK_MODIFICATIONS = 'FALSE'
-	ARDUINO_IP = 'http://99.253.59.150'
+	ARDUINO_IP = 'http://99.253.42.134'
 	UPDATE_PASSWORD = 'fishy'
 
 
