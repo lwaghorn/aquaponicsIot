@@ -13,21 +13,20 @@ class UpdateCycleSettings(Resource):
 
 	def post(self):
 		data = request.get_json(force=True)
-		print >> sys.stderr, data
 		if data['password'] == Config.UPDATE_PASSWORD:
-			print >> sys.stderr, 'passwordpass'
 			cycle_config = CycleConfigurationModel()
 			cycle_config.set_cycle_settings(data)
 			if cycle_config.verfify_settings():
 				cycle_config.save()
 				payload = cycle_config.get_dict()
 				payload['command'] = 'cycleSettings'
-				requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
+				# System no longer active so the command doesnt get sent to the arduino :)
+
+				# requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
 				return jsonify({'status': 'success'})
 			else:
 				return jsonify({'status': 'fail', 'error': 'Incorrect Password'})
 		else:
-			print >> sys.stderr, 'password FAIL'
 			return jsonify({'status': 'fail', 'error': 'Incorrect Password'})
 
 
@@ -85,7 +84,8 @@ class Change(Resource):
 		light = data['light']
 		state = data['state']
 		payload = {'command': 'manualLightSwitch', 'light': light, 'state': state}
-		requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
+		# System no longer active so the command doesnt get sent to the arduino :)
+		# requests.post(Config.ARDUINO_IP, data=json.dumps(payload))
 		LightModeModel.log_change(light=light, state=state)
 		return
 

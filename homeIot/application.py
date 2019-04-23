@@ -7,12 +7,12 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
-#sys.path.append('/home/liam/Developement/Flask/AquaponicsIot/aquaponicsIot/homeIot/')
 from controllers import cycleSettingsController, dataCollectionController, schedulerController, chartController
 
 sys.dont_write_bytecode = True
 application = Flask(__name__)
 application.config.from_object(__name__)
+# Nothing valuable in here anyway ;)
 application.config.update(
                   SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:qZL2SDXZ7uzg@aahepsdooxe5ga.cz99kvkmqcju.ca-central-1.rds.amazonaws.com/ebdb',
                   SECRET_KEY='secret!',

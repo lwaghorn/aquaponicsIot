@@ -161,7 +161,6 @@ class LightsModel(db.Model):
 			lightDict['status'] = light.get_status()
 			lightDict['mode'] = light.get_mode()
 			response.append(lightDict)
-		print >>sys.stderr, response
 		return response
 
 
@@ -182,8 +181,11 @@ class AtmosphereModel(db.Model):
 	@staticmethod
 	def get_past_feedback(days):
 		model = AtmosphereModel
-		past = datetime.now() - timedelta(days=days)
-		data = model.query.filter(model.created_at >= past).all()
+		# The system is no longer active so this is hard coded to a 3 day span
+		# last summer where the data was good :)
+		good_data = datetime(2018,7,11)
+		good_data_span = good_data - timedelta(days=days)
+		data = model.query.filter(model.created_at >= good_data_span).filter(model.created_at <= good_data).all()
 		return data
 
 
