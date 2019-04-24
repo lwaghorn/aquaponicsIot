@@ -1,6 +1,6 @@
 # aquaponicsIot
 # Visit Site [Here](http://aquaponicsiot.sdhwcyirgh.ca-central-1.elasticbeanstalk.com/)
-
+## The system is no longer running so displayed data is hard coded to last summer
 
 ![alt text](https://github.com/lwaghorn/aquaponicsIot/blob/master/pictures/3488483907_4e92114664_o.png)
 
