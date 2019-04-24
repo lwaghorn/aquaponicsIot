@@ -14,6 +14,8 @@
 
 ![alt text](https://github.com/lwaghorn/aquaponicsIot/blob/master/pictures/_DSC4123.jpg)
 
+![alt text](https://github.com/lwaghorn/aquaponicsIot/blob/master/pictures/fullbed.jpg)
+
 # Flow 💧 
 Water Flow is controlled by two motors.  
 Water from the tank to the grow bed is controlled by an AC motor that is controlled by a relay.  
