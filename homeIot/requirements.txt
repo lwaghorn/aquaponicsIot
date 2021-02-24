@@ -68,7 +68,7 @@ tabulate==0.7.5
 termcolor==1.1.0
 texttable==0.9.1
 times==0.7
-Twisted==16.0.0
+Twisted==20.3.0
 tzlocal==1.5.1
 urllib3==1.22
 virtualenv==15.0.1
