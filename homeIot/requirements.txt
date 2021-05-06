@@ -27,7 +27,7 @@ EB==0.1.5
 ecdsa==0.13
 enum34==1.1.6
 Flask==1.0.2
-Flask-Cors==3.0.6
+Flask-Cors==3.0.9
 Flask-Migrate==2.2.1
 Flask-RESTful==0.3.6
 Flask-SQLAlchemy==2.3.2
