@@ -70,7 +70,7 @@ texttable==0.9.1
 times==0.7
 Twisted==16.0.0
 tzlocal==1.5.1
-urllib3==1.22
+urllib3==1.26.5
 virtualenv==15.0.1
 wcwidth==0.1.7
 websocket-client==0.48.0
