@@ -1,6 +1,6 @@
 alembic==0.9.10
 aniso8601==3.0.2
-arrow==0.12.1
+arrow==0.15.1
 asn1crypto==0.24.0
 attrs==15.2.0
 awsebcli==3.14.2
